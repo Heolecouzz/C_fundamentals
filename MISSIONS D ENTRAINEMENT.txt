@@ -1,0 +1,165 @@
+=======================================================================
+MISSIONS D'ENTRAINEMENT C - RED TEAM / CYBERSECURITE
+=======================================================================
+
+-----------------------------------------------------------------------
+Niveau 1 : Le Payload Obfusqué (Bitwise et Chaînes)
+Concept C : Opérateurs bit à bit (XOR ^), manipulation de char.
+-----------------------------------------------------------------------
+Le Lore :
+Tu as intercepté une communication d'un Botnet. Le malware n'envoie pas 
+ses commandes en clair, il les "masque" avec une opération logique simple 
+très utilisée dans les malwares basiques : le XOR (OU exclusif). L'avantage 
+du XOR, c'est qu'il est symétrique : si A ^ Clé = B, alors B ^ Clé = A.
+
+La mission :
+1. Déclare une chaîne de caractères contenant le message secret : 
+   char payload[] = "Ceci_est_une_attaque";
+2. Déclare une clé de chiffrement : char key = 'K';
+3. Écris une fonction void xor_cipher(char *data, char key) qui parcourt 
+   la chaîne et applique l'opération XOR (^) entre chaque caractère et la clé.
+4. Affiche le résultat (qui sera un tas de caractères bizarres).
+5. Rappelle ta fonction xor_cipher sur ce même résultat et affiche-le à 
+   nouveau. Magie : le texte en clair doit réapparaître !
+
+-----------------------------------------------------------------------
+Niveau 2 : L'Authentification Vulnérable (Structures et Débordement)
+Concept C : Agencement de la mémoire (Structures), pointeurs, failles.
+-----------------------------------------------------------------------
+Le Lore :
+Tu audites le code d'un vieux coffre-fort numérique. Le développeur a 
+utilisé la fonction strcpy() qui est célèbre pour être dangereuse car 
+elle ne vérifie pas la taille des données copiées. Tu vas exploiter 
+cette faille pour devenir administrateur sans connaître le mot de passe.
+
+La mission :
+1. Crée une structure AuthContext contenant exactement ceci (dans cet ordre) :
+   - char password_buffer[8];
+   - int is_admin;
+2. Dans le main, instancie cette structure. Initialise is_admin à 0.
+3. Demande à l'utilisateur de taper le mot de passe via un scanf("%s", ...) 
+   Utilise strcpy pour copier l'entrée dans password_buffer.
+4. Si le mot de passe est "SECRET", passe is_admin à 1.
+5. Fais un printf à la fin : "Accès refusé" si is_admin == 0, 
+   "ACCÈS ROOT ACCORDÉ" si is_admin != 0.
+6. L'attaque : Teste ton programme en entrant un mot de passe très long : 
+   "AAAAAAAAAAAA". Que se passe-t-il ?
+(Explication : En dépassant les 8 octets du buffer, tu vas écrire 
+par-dessus la variable is_admin située juste à côté dans la mémoire de 
+la structure, modifiant ainsi sa valeur ! C'est le Buffer Overflow.)
+
+-----------------------------------------------------------------------
+Niveau 3 : L'Empreinte du Ransomware (Fichiers Binaires et Forensics)
+Concept C : Fichiers en mode binaire (fread, fwrite), pointeurs génériques.
+-----------------------------------------------------------------------
+Le Lore :
+Le ransomware "DeadLocker" a chiffré les fichiers d'une entreprise. 
+Le malware est mal codé : au lieu de chiffrer tout le fichier, il ajoute 
+juste 4 octets magiques au tout début du fichier pour le rendre illisible. 
+Ces octets sont 0xDE 0xAD 0xBE 0xEF (Dead Beef).
+
+La mission :
+1. Écris un petit script C qui crée un fichier factice document.txt, 
+   écrit "DEADBEEF" au début, puis du texte normal à la suite.
+2. Écris maintenant ton outil de Forensics. Ouvre ce fichier en 
+   lecture binaire ("rb").
+3. Lis les 4 premiers octets avec fread. Compare-les avec les valeurs 
+   hexadécimales de la signature malveillante.
+4. Si le fichier est corrompu (signature trouvée), crée un nouveau 
+   fichier document_restaure.txt ("wb").
+5. Lis le reste du fichier corrompu (en ignorant donc les 4 premiers 
+   octets) et écris-le dans le fichier restauré avec fwrite.
+6. Tu viens de développer un décrypteur de ransomware !
+
+-----------------------------------------------------------------------
+Niveau 4 : Le Hook du Rootkit (Pointeurs de fonctions)
+Concept C : Pointeurs de fonctions, interception d'exécution.
+-----------------------------------------------------------------------
+Le Lore :
+Tu développes un Rootkit en "Userland" (espace utilisateur). Un programme 
+légitime utilise une fonction pour vérifier les licences. Ton but est 
+d'intercepter (hooker) l'appel à cette fonction pour qu'elle renvoie 
+toujours "Vrai", sans modifier le code de la fonction originale.
+
+La mission :
+1. Code une fonction légitime int verifier_licence(char *cle_entree). 
+   Elle renvoie 1 si la clé est "1234-ABCD", et 0 sinon.
+2. Dans ton main, déclare un pointeur de fonction nommé pointeur_auth. 
+   Au début du programme, fais-le pointer vers verifier_licence.
+3. Le programme "normal" utilise pointeur_auth(cle) pour faire ses vérifications.
+4. Code ta fonction malveillante : int backdoor_licence(char *cle_entree). 
+   Elle renvoie 1 si la clé est "HACKED" (ta backdoor), sinon elle appelle 
+   la VRAIE fonction verifier_licence pour rester discrète.
+5. L'attaque : Modifie le pointeur_auth dans le main pour qu'il pointe 
+   vers backdoor_licence au lieu de verifier_licence.
+6. Teste avec "1234-ABCD", avec une fausse clé, et avec "HACKED". 
+   Si tout fonctionne, tu viens de détourner le flux d'exécution normal !
+   
+   
+
+
+
+
+
+
+
+
+======================================================================
+                          EXERCICES EN C
+======================================================================
+
+----------------------------------------------------------------------
+[ LOW ] - Bases de la syntaxe, conditions, boucles et entrées/sorties
+----------------------------------------------------------------------
+[DONE] L01 : Hello World & Input. Demander le nom et l'âge de l'utilisateur, puis afficher "Bonjour [Nom], tu as [Age] ans".
+[DONE] L02 : Pair ou Impair. Demander un nombre et afficher s'il est pair ou impair.
+[ ] L03 : Calculatrice Basique. Utiliser un `switch` pour faire + , -, *, / sur deux nombres entrés par l'utilisateur.
+[ ] L04 : Table ASCII. Afficher tous les caractères imprimables de la table ASCII avec leur code décimal et hexadécimal.
+[DONE] L05 : FizzBuzz. Afficher les nombres de 1 à 100. Si multiple de 3, afficher "Fizz". Si multiple de 5, "Buzz". Si les deux, "FizzBuzz".
+[ ] L06 : Factorielle. Calculer la factorielle d'un nombre donné en utilisant une boucle `for` ou `while`.
+[DONE ] L07 : Plus ou Moins. Générer un nombre aléatoire entre 1 et 100 et faire deviner l'utilisateur avec des indices "C'est plus" ou "C'est moins".
+
+----------------------------------------------------------------------
+[ INTERMEDIATE ] - Tableaux, chaînes de caractères et fonctions de base
+----------------------------------------------------------------------
+[DONE] I01 : Longueur de chaîne. Écrire une fonction qui calcule la longueur d'une chaîne sans utiliser `strlen`.
+[DONE] I02 : Reverse String. Inverser une chaîne de caractères sur place (sans créer de nouveau tableau).
+[DONE] I03 : Min, Max, Moyenne. Remplir un tableau de 10 entiers et écrire des fonctions pour trouver le min, le max et la moyenne.
+[DONE] I04 : Tri à bulles. Implémenter l'algorithme du "Bubble Sort" pour trier un tableau d'entiers dans l'ordre croissant.
+[DONE] I05 : Palindrome. Vérifier si un mot entré au clavier se lit de la même façon dans les deux sens (ex: radar).
+[DONE] I06 : Matrices. Déclarer deux tableaux 2D de taille 3x3 et écrire une fonction qui additionne ces deux matrices.
+[DONE] I07 : Fibonacci. Générer les N premiers termes de la suite de Fibonacci de deux manières : itérative, puis récursive.
+
+----------------------------------------------------------------------
+[ MEDIUM ] - Pointeurs, allocation dynamique (malloc/free) et structures
+----------------------------------------------------------------------
+[ ] M01 : Swap. Écrire une fonction `void swap(int *a, int *b)` qui inverse les valeurs de deux variables.
+[ ] M02 : Copie de pointeurs. Recréer la fonction `strcpy` de la bibliothèque standard uniquement en utilisant des pointeurs.
+[ ] M03 : Tableau Dynamique. Demander à l'utilisateur une taille `N`, allouer un tableau avec `malloc`, le remplir, puis libérer la mémoire.
+[ ] M04 : Gestionnaire d'élèves (Struct). Créer une structure `Student` (nom, âge, tableau de notes). Faire une fonction pour calculer la moyenne d'un élève.
+[ ] M05 : Lecture de Fichier. Ouvrir un fichier .txt et compter le nombre de caractères, de mots et de lignes qu'il contient.
+[ ] M06 : Copie de Fichier. Écrire un programme qui copie le contenu exact d'un fichier source.txt vers un fichier destination.txt.
+[ ] M07 : Pile (Stack). Implémenter une structure de Pile (LIFO - Last In, First Out) avec les fonctions `push()`, `pop()` et `peek()`.
+
+----------------------------------------------------------------------
+[ HIGH ] - Structures de données complexes, pointeurs de fonctions et bits
+----------------------------------------------------------------------
+[ ] H01 : Liste Chaînée Simple. Implémenter une liste chaînée : ajouter en tête, ajouter en fin, supprimer un nœud et afficher la liste.
+[ ] H02 : Liste Doublement Chaînée. Créer une liste doublement chaînée avec une fonction permettant de la parcourir à l'envers.
+[ ] H03 : Arbre Binaire de Recherche (BST). Insérer des valeurs dans un arbre binaire, et écrire une fonction d'affichage In-Order.
+[ ] H04 : Callbacks. Créer une fonction `map(int *array, int size, int (*func)(int))` qui applique une fonction à chaque élément d'un tableau.
+[ ] H05 : Opérations Bit à Bit (Bitwise). Écrire un programme qui compte le nombre de bits à '1' dans un entier donné.
+[ ] H06 : Implémentation de `split`. Coder une fonction qui prend une chaîne et un délimiteur, et renvoie un tableau de sous-chaînes.
+[ ] H07 : Table de Hachage (Hash Map). Créer un dictionnaire clé-valeur basique avec gestion des collisions (via chaînage).
+
+----------------------------------------------------------------------
+[ EXPERT ] - Programmation système, concurrence et architecture avancée
+----------------------------------------------------------------------
+[ ] E01 : Multithreading (Pthreads). Diviser un énorme tableau d'entiers en 4 parties et utiliser 4 threads pour calculer la somme totale plus rapidement.
+[ ] E02 : Custom Allocator. Coder tes propres versions basiques de `malloc` et `free` en utilisant un gros buffer statique ou `sbrk`/`mmap`.
+[ ] E03 : Serveur/Client TCP (Sockets). Créer un mini-chat où un client peut envoyer des messages à un serveur via le réseau (localhost).
+[ ] E04 : Producteur/Consommateur. Résoudre ce problème classique de concurrence en utilisant des mutex (`pthread_mutex_t`) et des variables de condition.
+[ ] E05 : Mini-Shell (CLI). Coder un interpréteur de commandes basique capable d'exécuter des commandes système (comme `ls`, `pwd`) avec `fork()`, `execvp()`, et `wait()`.
+[ ] E06 : IPC (Inter-Process Communication). Faire communiquer deux processus distincts pour s'échanger une structure de données en utilisant la mémoire partagée (Shared Memory) ou des Pipes.
+[ ] E07 : Garbage Collector minimaliste. Implémenter un système très basique de comptage de références (Reference Counting) pour libérer des structures automatiquement quand elles ne sont plus utilisées.
+======================================================================
