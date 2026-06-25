@@ -1,24 +1,24 @@
 #include <stdio.h>
-#include </home/lika/Desktop/N7/Cesure/C_fundamentals/Heap/linkedList.c>
+#include <linkedList.h>
 
 
-void create_ll(LinkedList list) {
+void create_ll(LinkedList* list) {
     list = NULL;
 }
 
 
-void suppress_ll(LinkedList list) {
+void suppress_ll(LinkedList* list) {
 
-    LinkedList next;
+    LinkedList* next;
     
     while (list != NULL) {
-        next = list.following;
+        next = list->following;
         free(list);
     }
 }
 
 
-int is_empty(LinkedList list) {
+int is_empty(LinkedList* list) {
     if (list == NULL) {
         return 1;
     }
@@ -26,62 +26,82 @@ int is_empty(LinkedList list) {
 }
 
 
-LinkedList add_element(LinkedList list, void* element) {
+LinkedList* add_element(LinkedList* list, void* element) {
 
-    LinkedList actual = list;
-    LinkedList former;
+    LinkedList* actual = list;
+    LinkedList* former;
 
     while (actual != NULL) {
         former = actual;
-        actual = actual.following;
+        actual = actual->following;
     }
 
-    former.following = realloc(element * sizeof(void*));
-    list.element = element;
+    former->following = malloc(element * sizeof(void*));
+    list->element = element;
 
     return list;
 }
 
 
-LinkedList suppress_element(LinkedList list, void* element) {
+LinkedList* suppress_element(LinkedList* list, void* element) {
 
-    LinkedList actual = list;
-    LinkedList former;
-    LinkedList next;
+    LinkedList* actual = list;
+    LinkedList* former;
+    LinkedList* next;
 
     // Treat if the element to suppress is the first one
     if (actual != NULL) {
-        if (actual.element == element) {
-            actual.following;
+        if (actual->element == element) {
+            actual = actual->following;
             free(list);
             return actual;
         } else {
             former = actual;
-            actual.following;
-            next = actual.following;
+            actual = actual->following;
+            next = actual->following;
         }
     }
 
     // Treat if the element is inside the linked list
     while (actual != NULL && next != NULL) {
-        if (actual.element == element) {
+        if (actual->element == element) {
             free(actual);
-            former.following = next;
+            former->following = next;
         } else {
             former = actual;
-            actual.following;
-            next = actual.following;
+            actual = actual->following;
+            next = actual->following;
         }
     }
 
     // Treat if the element is the last one 
     if (actual != NULL && next == NULL) {
-        if (actual.element == element) {
-            former.following = NULL;
+        if (actual->element == element) {
+            former->following = NULL;
         } else {
             printf("The element isn't in the list");
         }
     }
 
     return list;
+}
+
+
+void* top_element(LinkedList* list) {
+
+    LinkedList* actual = list;
+    LinkedList* next = actual->following;
+
+    while (next != NULL) {
+        next = next->following;
+        actual = actual->following;
+    }
+
+    return actual->element;
+}
+
+
+void display_ll(LinkedList* list) {
+
+
 }
