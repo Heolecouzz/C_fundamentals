@@ -23,7 +23,7 @@ void* top_element(LinkedList list);
 void display_ll(LinkedList list);
 
 
-struct LinkedList {
+typedef struct LinkedList {
     void* element;
     LinkedList* following;
-};
+} LinkedList;
