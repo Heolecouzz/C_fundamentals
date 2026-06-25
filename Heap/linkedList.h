@@ -11,10 +11,10 @@ void suppress_ll(LinkedList list);
 int is_empty(LinkedList list);
 
 // Add elements to the linked list
-void add_element(LinkedList list, void* element);
+LinkedList add_element(LinkedList list, void* element);
 
 // Suppress the element given
-void suppress_element(LinkedList list, void* element);
+LinkedList suppress_element(LinkedList list, void* element);
 
 // Gives the last element of the linked list
 void* top_element(LinkedList list);
