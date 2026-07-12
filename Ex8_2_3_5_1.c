@@ -6,7 +6,7 @@
 int main(int argc, char* argv[]) {
 
     if (argc != 3) {
-        perror("This function needs 3 arguments : ./a.out <nameFileToCopy> <nameFileWhereToCopy>");
+        printf("This function needs 3 arguments : ./a.out <nameFileToCopy> <nameFileWhereToCopy>");
         return 0;
     }
 
