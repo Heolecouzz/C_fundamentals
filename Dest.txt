@@ -1,1 +1,3 @@
-This is the file to copy ! Hope this works !
+The second file to read
+
+It will be great to see everyone today !
