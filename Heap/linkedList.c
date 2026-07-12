@@ -2,18 +2,22 @@
 #include <linkedList.h>
 
 
-void create_ll(LinkedList* list) {
+LinkedList* create_ll(LinkedList* list) {
     list = NULL;
+
+    return list;
 }
 
 
 void suppress_ll(LinkedList* list) {
 
     LinkedList* next;
+    LinkedList* actual = list;
     
-    while (list != NULL) {
-        next = list->following;
-        free(list);
+    while (actual != NULL) {
+        next = actual->following;
+        free(actual);
+        actual = next;
     }
 }
 
@@ -31,15 +35,23 @@ LinkedList* add_element(LinkedList* list, void* element) {
     LinkedList* actual = list;
     LinkedList* former;
 
+    if (list == NULL) {
+        printf("The list is empty");
+        goto error;
+    }
+
     while (actual != NULL) {
         former = actual;
         actual = actual->following;
     }
 
-    former->following = malloc(element * sizeof(void*));
-    list->element = element;
+    actual = malloc(sizeof(LinkedList));
+    actual->element = element;
 
-    return list;
+    return actual;
+
+error:
+    return EXIT_FAILURE;
 }
 
 
@@ -48,6 +60,11 @@ LinkedList* suppress_element(LinkedList* list, void* element) {
     LinkedList* actual = list;
     LinkedList* former;
     LinkedList* next;
+
+    if (list == NULL) {
+        printf("The list is empty");
+        goto error;
+    }
 
     // Treat if the element to suppress is the first one
     if (actual != NULL) {
@@ -67,6 +84,7 @@ LinkedList* suppress_element(LinkedList* list, void* element) {
         if (actual->element == element) {
             free(actual);
             former->following = next;
+            break;
         } else {
             former = actual;
             actual = actual->following;
@@ -84,12 +102,22 @@ LinkedList* suppress_element(LinkedList* list, void* element) {
     }
 
     return list;
+
+error:
+
+    return EXIT_FAILURE;
 }
 
 
 void* top_element(LinkedList* list) {
 
     LinkedList* actual = list;
+
+    if (list == NULL) {
+        printf("The list is empty");
+        goto error;
+    }
+
     LinkedList* next = actual->following;
 
     while (next != NULL) {
@@ -98,10 +126,14 @@ void* top_element(LinkedList* list) {
     }
 
     return actual->element;
+
+error:
+
+    return EXIT_FAILURE; 
 }
 
 
-void display_ll(LinkedList* list) {
+void display_ll(void* display_element(LinkedList* list)) {
 
 
 }
